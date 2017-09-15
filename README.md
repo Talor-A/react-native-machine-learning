@@ -1,11 +1,10 @@
-
 # react-native-machine-learning
 
 ## Getting started
 
 `$ npm install react-native-machine-learning --save`
 
-### Mostly automatic installation
+### automatic installation
 
 `$ react-native link react-native-machine-learning`
 
@@ -14,10 +13,13 @@
 
 #### iOS
 
+iOS coming soon!
+<!--
 1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
 2. Go to `node_modules` ➜ `react-native-machine-learning` and add `RNMachineLearning.xcodeproj`
 3. In XCode, in the project navigator, select your project. Add `libRNMachineLearning.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 4. Run your project (`Cmd+R`)<
+-->
 
 #### Android
 
@@ -32,14 +34,15 @@
 3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
   	```
       compile project(':react-native-machine-learning')
-  	```
+		```
 
 
 ## Usage
-```javascript
-import RNMachineLearning from 'react-native-machine-learning';
 
-// TODO: What to do with the module?
-RNMachineLearning;
+```javascript
+import RNML from 'react-native-machine-learning'
+
+RNML.runInception(imageURI)
+	.then(results => this.setState({ results }))
+
 ```
-  # react-native-machine-learning

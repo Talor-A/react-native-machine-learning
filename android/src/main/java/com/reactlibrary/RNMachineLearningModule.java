@@ -61,39 +61,50 @@ public class RNMachineLearningModule extends ReactContextBaseJavaModule {
   // Bridged methods
 
   @ReactMethod
-  public void runInception(String uri, Promise promise) throws FileNotFoundException {
-
-    classifier = TensorFlowImageClassifier.create(getCurrentActivity().getAssets(), MODEL_FILE, LABEL_FILE, INPUT_SIZE,
-        IMAGE_MEAN, IMAGE_STD, INPUT_NAME, OUTPUT_NAME);
+  public void recognizeFile(String uri, Promise promise) {
     try {
       Bitmap bmp = BitmapFactory
           .decodeStream(getReactApplicationContext().getContentResolver().openInputStream(Uri.parse(uri)));
-      float imageAspect = (float) bmp.getHeight() / bmp.getWidth();
-      int scaledHeight, scaledWidth;
-      Bitmap scaledBitmap, croppedBitmap;
-      Log.d("RNML", "original size: " + bmp.getHeight() + "x" + bmp.getWidth());
-      if (imageAspect > 1) { // is portrait
-        scaledWidth = INPUT_SIZE;
-        scaledHeight = Math.round(INPUT_SIZE * imageAspect);
-        Log.d("RNML", "scaled size: " + scaledHeight + "x" + scaledWidth);
-        scaledBitmap = Bitmap.createScaledBitmap(bmp, scaledHeight, scaledWidth, true);
-        croppedBitmap = Bitmap.createBitmap(scaledBitmap, 0, (scaledBitmap.getHeight() - INPUT_SIZE) / 2, INPUT_SIZE,
-            INPUT_SIZE);
-      } else { // is landscape
-        scaledHeight = INPUT_SIZE;
-        scaledWidth = Math.round(INPUT_SIZE / imageAspect);
-        Log.d("RNML", "scaled size: " + scaledHeight + "x" + scaledWidth);
-        scaledBitmap = Bitmap.createScaledBitmap(bmp, scaledHeight, scaledWidth, true);
-        croppedBitmap = Bitmap.createBitmap(scaledBitmap, Math.round((scaledBitmap.getWidth() - INPUT_SIZE) / 2), 0,
-            INPUT_SIZE, INPUT_SIZE);
-      }
-      final List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap);
-
-      promise.resolve(getResultsAsWritableArray(results));
-
+      promise.resolve(recognize(bmp));
     } catch (FileNotFoundException e) {
       promise.reject(e);
     }
+  }
+
+  @ReactMethod
+  public void recognizeData(String base6data, Promise promise) {
+    promise.reject(new Error("not implemented!"));
+  }
+
+  public Bitmap cropScaleBitmap(Bitmap bmp, int size) {
+    float imageAspect = (float) bmp.getHeight() / bmp.getWidth();
+    int scaledHeight, scaledWidth;
+    Bitmap scaledBitmap, croppedBitmap;
+    Log.d("RNML", "original size: " + bmp.getHeight() + "x" + bmp.getWidth());
+    if (imageAspect > 1) { // is portrait
+      scaledWidth = size;
+      scaledHeight = Math.round(size * imageAspect);
+      Log.d("RNML", "scaled size: " + scaledHeight + "x" + scaledWidth);
+      scaledBitmap = Bitmap.createScaledBitmap(bmp, scaledHeight, scaledWidth, true);
+      croppedBitmap = Bitmap.createBitmap(scaledBitmap, 0, (scaledBitmap.getHeight() - size) / 2, size, size);
+    } else { // is landscape
+      scaledHeight = size;
+      scaledWidth = Math.round(size / imageAspect);
+      Log.d("RNML", "scaled size: " + scaledHeight + "x" + scaledWidth);
+      scaledBitmap = Bitmap.createScaledBitmap(bmp, scaledHeight, scaledWidth, true);
+      croppedBitmap = Bitmap.createBitmap(scaledBitmap, Math.round((scaledBitmap.getWidth() - size) / 2), 0, size,
+          size);
+    }
+    return croppedBitmap;
+  }
+
+  public WritableArray recognize(Bitmap bmp) {
+    classifier = TensorFlowImageClassifier.create(getCurrentActivity().getAssets(), MODEL_FILE, LABEL_FILE, INPUT_SIZE,
+        IMAGE_MEAN, IMAGE_STD, INPUT_NAME, OUTPUT_NAME);
+    Bitmap croppedBitmap = cropScaleBitmap(bmp, INPUT_SIZE);
+    final List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap);
+
+    return getResultsAsWritableArray(results);
   }
 
   //--------------------------------------------------------------

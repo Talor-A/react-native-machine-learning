@@ -1,5 +1,7 @@
 # react-native-machine-learning
 
+allows the use of common machine learning frameworks in native mobile environments, bridged to React Native JS engine
+
 ## Getting started
 
 `$ npm install react-native-machine-learning --save`

@@ -2,6 +2,10 @@
 
 allows the use of common machine learning frameworks in native mobile environments, bridged to React Native JS engine
 
+## Overview
+this module allows react native apps on android to use tensorflow mobile (iOS coming soon). import a compiled model for image classification, regression, etc. and use the methods documented below to interface with it.
+
+
 ## Getting started
 
 `$ npm install react-native-machine-learning --save`
